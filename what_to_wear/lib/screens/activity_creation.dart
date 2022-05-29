@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import '../google_sign_in.dart';
+
+enum ActivityIntensity { low, medium, high }
 
 class ActivityCreationScreen extends StatelessWidget {
   static const screenTitle = 'Dane o aktywności';
@@ -37,62 +42,161 @@ class ActivityCreationForm extends StatefulWidget {
 
 class ActivityCreationFormState extends State<ActivityCreationForm> {
   final _formKey = GlobalKey<FormState>();
+  DateTime dateTime = DateTime.now();
+  final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
+  final DateFormat timeFormatter = DateFormat('HH:mm');
+  ActivityIntensity? _intensity = ActivityIntensity.medium;
 
   @override
   Widget build(BuildContext context) {
+    final hours = dateTime.hour.toString().padLeft(2, '0');
+    final minutes = dateTime.minute.toString().padLeft(2, '0');
+
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Planowana data rozpoczęcia:',
-              labelStyle: TextStyle(
-                fontSize: 20,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Planowana pora rozpoczęcia:',
+                style: TextStyle(fontSize: 20),
               ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Pole wymagane';
-              }
-              return null;
-            },
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: EdgeInsets.zero,
+                      ),
+                      onPressed: () async {
+                        final date = await pickDate();
+                        if (date == null) return; // CANCEL
+
+                        final newDateTime = DateTime(date.year, date.month,
+                            date.day, dateTime.hour, dateTime.minute);
+
+                        setState(() => dateTime = newDateTime);
+                      },
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0, bottom: 10.0, right: 5.0),
+                              child: Text(
+                                dateFormatter.format(dateTime),
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.calendar_month,
+                            ),
+                          ]),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 25,
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: EdgeInsets.zero,
+                      ),
+                      onPressed: () async {
+                        final time = await pickTime();
+                        if (time == null) return; // CANCEL
+
+                        final newDateTime = DateTime(
+                            dateTime.year,
+                            dateTime.month,
+                            dateTime.day,
+                            time.hour,
+                            time.minute);
+
+                        setState(() => dateTime = newDateTime);
+                      },
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0, bottom: 10.0, right: 10.0),
+                              child: Text(
+                                '$hours:$minutes',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                            const Icon(Icons.access_time)
+                          ]),
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Czas trwania:',
-              labelStyle: TextStyle(
-                fontSize: 20,
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Pole wymagane';
-              }
-              return null;
-            },
+          const SizedBox(
+            height: 20,
           ),
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Intensywność:',
-              labelStyle: TextStyle(
-                fontSize: 20,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Intensywność:',
+                style: TextStyle(fontSize: 20),
               ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Pole wymagane';
-              }
-              return null;
-            },
+              const SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
+                title: const Text('Niska'),
+                leading: Radio<ActivityIntensity>(
+                  value: ActivityIntensity.low,
+                  groupValue: _intensity,
+                  onChanged: (ActivityIntensity? value) {
+                    setState(() {
+                      _intensity = value;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
+                title: const Text('Umiarkowana'),
+                leading: Radio<ActivityIntensity>(
+                  value: ActivityIntensity.medium,
+                  groupValue: _intensity,
+                  onChanged: (ActivityIntensity? value) {
+                    setState(() {
+                      _intensity = value;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
+                title: const Text('Wysoka'),
+                leading: Radio<ActivityIntensity>(
+                  value: ActivityIntensity.high,
+                  groupValue: _intensity,
+                  onChanged: (ActivityIntensity? value) {
+                    setState(() {
+                      _intensity = value;
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
           TextFormField(
             // The validator receives the text that the user has entered.
@@ -110,28 +214,34 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
               return null;
             },
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  // Validate returns true if the form is valid, or false otherwise.
-                  if (_formKey.currentState!.validate()) {
-                    // If the form is valid, display a snackbar. In the real world,
-                    // you'd often call a server or save the information in a database.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Wciśnięto przycisk')),
-                    );
-                  }
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    'Dobierz strój',
-                    style: TextStyle(fontSize: 24),
+          Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Validate returns true if the form is valid, or false otherwise.
+                if (_formKey.currentState!.validate()) {
+                  // If the form is valid, display a snackbar. In the real world,
+                  // you'd often call a server or save the information in a database.
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Wciśnięto przycisk')),
+                  );
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding:
+                        EdgeInsets.only(right: 8.0, top: 10.0, bottom: 10.0),
+                    child:
+                        Text('Dobierz strój', style: TextStyle(fontSize: 24)),
                   ),
-                ),
+                  Image.asset(
+                    'assets/running_man.png',
+                    height: 40.0,
+                    width: 40.0,
+                  ),
+                ],
               ),
             ),
           ),
@@ -139,4 +249,15 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
       ),
     );
   }
+
+  Future<DateTime?> pickDate() => showDatePicker(
+      context: context,
+      initialDate: dateTime,
+      firstDate: DateTime.now(), // wyznaczać jako bieżący dzień
+      lastDate: DateTime.now()
+          .add(const Duration(days: 5))); // wyznaczać jako 5 dni później
+
+  Future<TimeOfDay?> pickTime() => showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute));
 }
