@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:uuid/uuid.dart';
 
 import '../google_sign_in.dart';
+import '../place_service.dart';
+import 'cities_search.dart';
 
 enum ActivityIntensity { low, medium, high }
 
@@ -46,11 +49,20 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
   final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
   final DateFormat timeFormatter = DateFormat('HH:mm');
   ActivityIntensity? _intensity = ActivityIntensity.medium;
+  final _controller = TextEditingController();
+  String _latitude = '';
+  String _longitude = '';
 
   @override
   Widget build(BuildContext context) {
     final hours = dateTime.hour.toString().padLeft(2, '0');
     final minutes = dateTime.minute.toString().padLeft(2, '0');
+
+    @override
+    void dispose() {
+      _controller.dispose();
+      super.dispose();
+    }
 
     // Build a Form widget using the _formKey created above.
     return Form(
@@ -198,21 +210,52 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
               ),
             ],
           ),
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Lokalizacja:',
-              labelStyle: TextStyle(
-                fontSize: 20,
+          const SizedBox(
+            height: 20,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Lokalizacja:',
+                style: TextStyle(fontSize: 20),
               ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Pole wymagane';
-              }
-              return null;
-            },
+              TextField(
+                controller: _controller,
+                readOnly: true,
+                onTap: () async {
+                  // generate a new token here
+                  final sessionToken = const Uuid().v4();
+                  final Suggestion? result = await showSearch(
+                    context: context,
+                    delegate: CitiesSearch(sessionToken),
+                  );
+                  // This will change the text displayed in the TextField
+                  if (result != null && result.placeId.isNotEmpty) {
+                    final placeGeometry = await PlaceApiProvider(sessionToken)
+                        .getPlaceGeometryFromId(result.placeId);
+                    setState(() {
+                      _controller.text = result.description;
+                      _latitude = placeGeometry.latitude;
+                      _longitude = placeGeometry.longitude;
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  icon: Container(
+                    margin: const EdgeInsets.only(left: 10),
+                    width: 10,
+                    height: 10,
+                    child: const Icon(
+                      Icons.location_pin,
+                      color: Colors.purple,
+                    ),
+                  ),
+                  hintText: "Wybierz miejscowość",
+                  contentPadding: const EdgeInsets.only(left: 8.0, top: 16.0),
+                ),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(30.0),
