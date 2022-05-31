@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:what_to_wear/google_sign_in.dart';
-import 'package:what_to_wear/screens/activity_creation.dart';
+
+import 'screens/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,8 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: const ActivityCreationScreen(),
-      // home: Home(title: title),
+      home: const HomeScreen(),
     );
   }
 }

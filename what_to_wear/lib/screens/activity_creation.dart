@@ -1,38 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:uuid/uuid.dart';
 
-import '../google_sign_in.dart';
 import '../place_service.dart';
 import 'cities_search.dart';
 
 enum ActivityIntensity { low, medium, high }
-
-class ActivityCreationScreen extends StatelessWidget {
-  static const screenTitle = 'Dane o aktywności';
-
-  const ActivityCreationScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(screenTitle),
-        actions: const [
-          SignInButton(),
-        ],
-      ),
-      body: const SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: ActivityCreationForm(),
-        ),
-      ),
-    );
-  }
-}
 
 class ActivityCreationForm extends StatefulWidget {
   const ActivityCreationForm({Key? key}) : super(key: key);
