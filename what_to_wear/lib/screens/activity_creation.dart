@@ -221,7 +221,7 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
                     height: 10,
                     child: const Icon(
                       Icons.location_pin,
-                      color: Colors.purple,
+                      color: Colors.purple, //tego użyć tylko ze zmienna boolean
                     ),
                   ),
                   hintText: "Wybierz miejscowość",
@@ -233,16 +233,7 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
           Padding(
             padding: const EdgeInsets.all(30.0),
             child: ElevatedButton(
-              onPressed: () {
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Wciśnięto przycisk')),
-                  );
-                }
-              },
+              onPressed: chooseOutfit,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -276,4 +267,15 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
   Future<TimeOfDay?> pickTime() => showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute));
+
+  void chooseOutfit() {
+    if (_latitude.isEmpty || _longitude.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Nie wybrano lokalizacji'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2)),
+      );
+    }
+  }
 }

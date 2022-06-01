@@ -46,7 +46,13 @@ class CitiesSearch extends SearchDelegate<Suggestion> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return const Text('results');
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: const Text(
+        'Należy wybrać miejscowość z listy',
+        style: TextStyle(fontSize: 16),
+      ),
+    );
   }
 
   @override
