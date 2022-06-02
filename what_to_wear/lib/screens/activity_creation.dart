@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:what_to_wear/auth/secrets.dart';
 
 import '../place_service.dart';
+import '../weather_service.dart';
 import 'cities_search.dart';
 
 enum ActivityIntensity { low, medium, high }
@@ -18,7 +20,7 @@ class ActivityCreationForm extends StatefulWidget {
 
 class ActivityCreationFormState extends State<ActivityCreationForm> {
   final _formKey = GlobalKey<FormState>();
-  DateTime dateTime = DateTime.now();
+  DateTime chosenDateTime = setStartDateTime();
   final DateFormat dateFormatter = DateFormat('dd.MM.yyyy');
   final DateFormat timeFormatter = DateFormat('HH:mm');
   ActivityIntensity? _intensity = ActivityIntensity.medium;
@@ -28,8 +30,8 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
 
   @override
   Widget build(BuildContext context) {
-    final hours = dateTime.hour.toString().padLeft(2, '0');
-    final minutes = dateTime.minute.toString().padLeft(2, '0');
+    final hours = chosenDateTime.hour.toString().padLeft(2, '0');
+    final minutes = chosenDateTime.minute.toString().padLeft(2, '0');
 
     @override
     void dispose() {
@@ -66,10 +68,14 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
                         final date = await pickDate();
                         if (date == null) return; // CANCEL
 
-                        final newDateTime = DateTime(date.year, date.month,
-                            date.day, dateTime.hour, dateTime.minute);
+                        final newDateTime = DateTime(
+                            date.year,
+                            date.month,
+                            date.day,
+                            chosenDateTime.hour,
+                            chosenDateTime.minute);
 
-                        setState(() => dateTime = newDateTime);
+                        setState(() => chosenDateTime = newDateTime);
                       },
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -78,7 +84,7 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
                               padding: const EdgeInsets.only(
                                   top: 10.0, bottom: 10.0, right: 5.0),
                               child: Text(
-                                dateFormatter.format(dateTime),
+                                dateFormatter.format(chosenDateTime),
                                 style: const TextStyle(fontSize: 20),
                               ),
                             ),
@@ -102,13 +108,13 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
                         if (time == null) return; // CANCEL
 
                         final newDateTime = DateTime(
-                            dateTime.year,
-                            dateTime.month,
-                            dateTime.day,
+                            chosenDateTime.year,
+                            chosenDateTime.month,
+                            chosenDateTime.day,
                             time.hour,
                             time.minute);
 
-                        setState(() => dateTime = newDateTime);
+                        setState(() => chosenDateTime = newDateTime);
                       },
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +227,7 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
                     height: 10,
                     child: const Icon(
                       Icons.location_pin,
-                      color: Colors.purple, //tego użyć tylko ze zmienna boolean
+                      color: Colors.purple,
                     ),
                   ),
                   hintText: "Wybierz miejscowość",
@@ -259,16 +265,17 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
 
   Future<DateTime?> pickDate() => showDatePicker(
       context: context,
-      initialDate: dateTime,
+      initialDate: chosenDateTime,
       firstDate: DateTime.now(), // wyznaczać jako bieżący dzień
       lastDate: DateTime.now()
           .add(const Duration(days: 5))); // wyznaczać jako 5 dni później
 
   Future<TimeOfDay?> pickTime() => showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute));
+      initialTime:
+          TimeOfDay(hour: chosenDateTime.hour, minute: chosenDateTime.minute));
 
-  void chooseOutfit() {
+  Future<void> chooseOutfit() async {
     if (_latitude.isEmpty || _longitude.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -276,6 +283,35 @@ class ActivityCreationFormState extends State<ActivityCreationForm> {
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2)),
       );
+    } else {
+      final difference = chosenDateTime.difference(DateTime.now());
+      if (difference.inMinutes < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Wybrana data i godzina nie może być wcześniejsza niż bieżąca pora'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3)),
+        );
+      } else {
+        int forecastsCount = (difference.inHours / 3).floor() + 2;
+        WeatherForecast forecast = await WeatherApiProvider()
+            .getWeatherForecast(
+                _latitude, _longitude, forecastsCount, chosenDateTime);
+
+        print(forecast);
+      }
+    }
+  }
+
+  static DateTime setStartDateTime() {
+    DateTime dateTime = DateTime.now();
+    if (dateTime.minute < 30) {
+      return DateTime(
+          dateTime.year, dateTime.month, dateTime.day, dateTime.hour, 30);
+    } else {
+      return DateTime(
+          dateTime.year, dateTime.month, dateTime.day, dateTime.hour + 1, 0);
     }
   }
 }

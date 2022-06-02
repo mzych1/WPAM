@@ -17,7 +17,6 @@ class _SignInButtonState extends State<SignInButton> {
     _googleSignIn.onCurrentUserChanged.listen((account) {
       setState(() {
         _currentUser = account;
-        print("LOGOWANIE - 2 : " + _currentUser.toString());
       });
     });
     _googleSignIn.signInSilently();
