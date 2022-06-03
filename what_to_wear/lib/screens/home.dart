@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:what_to_wear/screens/activity_screen.dart';
 
-import '../google_sign_in.dart';
-import 'activity_creation.dart';
+import '../auth/google_sign_in.dart';
 
 class HomeScreen extends StatefulWidget {
   final String screenTitle = 'Dane o aktywności';
@@ -24,10 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: const SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: ActivityCreationForm(),
-        ),
+        child: ActivityScreen(),
       ),
     );
   }

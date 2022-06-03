@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart';
-import 'auth/secrets.dart';
+import 'package:what_to_wear/auth/secrets.dart';
 
 class PlaceGeometry {
   String latitude;

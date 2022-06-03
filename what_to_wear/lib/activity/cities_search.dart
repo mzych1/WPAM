@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../place_service.dart';
+import 'package:what_to_wear/activity/place_service.dart';
 
 class CitiesSearch extends SearchDelegate<Suggestion> {
   CitiesSearch(this.sessionToken) {
