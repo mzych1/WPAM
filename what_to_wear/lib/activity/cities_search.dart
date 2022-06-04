@@ -14,9 +14,9 @@ class CitiesSearch extends SearchDelegate<Suggestion> {
     return [
       IconButton(
         tooltip: 'Wyczyść',
-        icon: const Icon(
+        icon: Icon(
           Icons.clear,
-          color: Colors.purple,
+          color: Theme.of(context).colorScheme.primary,
         ),
         onPressed: () {
           query = '';
@@ -29,12 +29,19 @@ class CitiesSearch extends SearchDelegate<Suggestion> {
   String get searchFieldLabel => 'Wyszukaj';
 
   @override
+  ThemeData appBarTheme(BuildContext context) {
+    return Theme.of(context).copyWith(
+        appBarTheme: AppBarTheme(
+            backgroundColor: Theme.of(context).colorScheme.background));
+  }
+
+  @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
       tooltip: 'Cofnij',
-      icon: const Icon(
+      icon: Icon(
         Icons.arrow_back,
-        color: Colors.purple,
+        color: Theme.of(context).colorScheme.primary,
       ),
       onPressed: () {
         close(context,

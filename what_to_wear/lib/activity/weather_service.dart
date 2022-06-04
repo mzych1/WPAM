@@ -1,40 +1,36 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:what_to_wear/auth/secrets.dart';
 
 class WeatherForecast {
   late num temperature;
   late String description;
-  late String iconId;
+  late String imageUrl;
   late num cloudsPercentage; // 0-100
   late num windSpeed; // m/s
-  late num precipitationChance; // 0-1
+  late num precipitationChance; // 0-100
   late DateTime forecastDate; // polish time zone (GMT+2)
-
-  WeatherForecast(
-      {required this.temperature,
-      required this.description,
-      required this.iconId,
-      required this.cloudsPercentage,
-      required this.windSpeed,
-      required this.precipitationChance,
-      required this.forecastDate});
 
   WeatherForecast.fromJson(var jsonForecast) {
     temperature = jsonForecast['main']['temp'];
     description = jsonForecast['weather'][0]['description'];
-    iconId = jsonForecast['weather'][0]['icon'];
+    description =
+        description[0].toUpperCase() + description.substring(1).toLowerCase();
+    String iconId = jsonForecast['weather'][0]['icon'].toString();
+    imageUrl =
+        "https://openweathermap.org/img/wn/" + iconId.toString() + "@2x.png";
     cloudsPercentage = jsonForecast['clouds']['all'];
     windSpeed = jsonForecast['wind']['speed'];
-    precipitationChance = jsonForecast['pop'];
+    precipitationChance = jsonForecast['pop'] * 100;
     forecastDate =
         DateTime.parse(jsonForecast['dt_txt']).add(const Duration(hours: 2));
   }
 
   @override
   String toString() {
-    return 'WeatherForecast(temperature: $temperature, description: $description, iconId: $iconId, cloudsPercentage: $cloudsPercentage, ' +
+    return 'WeatherForecast(temperature: $temperature, description: $description, iconId: $imageUrl, cloudsPercentage: $cloudsPercentage, ' +
         'windSpeed: $windSpeed, precipitationChance: $precipitationChance, forecastDate: $forecastDate)';
   }
 }

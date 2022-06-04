@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SignInButton(),
         ],
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: ActivityScreen(),
       ),
     );

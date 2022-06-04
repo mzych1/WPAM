@@ -75,13 +75,13 @@ class _SignInButtonState extends State<SignInButton> {
           const PopupMenuDivider(),
           PopupMenuItem(
             child: Row(
-              children: const [
+              children: [
                 Icon(
                   Icons.logout,
-                  color: Colors.purple,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 5),
-                Text('Wyloguj'),
+                const SizedBox(width: 5),
+                const Text('Wyloguj'),
               ],
             ),
             value: 2,

@@ -63,7 +63,6 @@ class LocationWidgetState extends State<LocationWidget> {
               height: 10,
               child: const Icon(
                 Icons.location_pin,
-                color: Colors.purple,
               ),
             ),
             hintText: "Wybierz miejscowość",

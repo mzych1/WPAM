@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: title,
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.deepPurple,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 199, 197, 228),
       ),
       home: const HomeScreen(),
     );
