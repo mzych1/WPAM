@@ -6,6 +6,7 @@ import 'package:what_to_wear/auth/secrets.dart';
 
 class WeatherForecast {
   late num temperature;
+  late num apparentTemperature;
   late String description;
   late String imageUrl;
   late num cloudsPercentage; // 0-100
@@ -15,6 +16,7 @@ class WeatherForecast {
 
   WeatherForecast.fromJson(var jsonForecast) {
     temperature = jsonForecast['main']['temp'];
+    apparentTemperature = jsonForecast['main']['feels_like'];
     description = jsonForecast['weather'][0]['description'];
     description =
         description[0].toUpperCase() + description.substring(1).toLowerCase();
@@ -30,7 +32,7 @@ class WeatherForecast {
 
   @override
   String toString() {
-    return 'WeatherForecast(temperature: $temperature, description: $description, iconId: $imageUrl, cloudsPercentage: $cloudsPercentage, ' +
+    return 'WeatherForecast(temperature: $temperature, apparentTemperature: $apparentTemperature, description: $description, iconId: $imageUrl, cloudsPercentage: $cloudsPercentage, ' +
         'windSpeed: $windSpeed, precipitationChance: $precipitationChance, forecastDate: $forecastDate)';
   }
 }

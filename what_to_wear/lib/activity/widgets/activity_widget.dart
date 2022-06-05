@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/choose_outfit_button.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
@@ -6,10 +7,14 @@ import 'package:what_to_wear/activity/widgets/location_widget.dart';
 import 'package:what_to_wear/activity/widgets/start_date_widget.dart';
 
 typedef WeatherCallback = void Function(WeatherForecast? forecast);
+typedef OutfitCallback = void Function(Outfit? outfit);
 
 class ActivityWidget extends StatefulWidget {
-  const ActivityWidget({Key? key, required this.callback}) : super(key: key);
-  final WeatherCallback callback;
+  const ActivityWidget(
+      {Key? key, required this.weatherCallback, required this.outfitCallback})
+      : super(key: key);
+  final WeatherCallback weatherCallback;
+  final OutfitCallback outfitCallback;
 
   @override
   ActivityWidgetState createState() {
@@ -23,6 +28,7 @@ class ActivityWidgetState extends State<ActivityWidget> {
   String _latitude = '';
   String _longitude = '';
   WeatherForecast? _forecast;
+  Outfit? _outfit;
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +57,13 @@ class ActivityWidgetState extends State<ActivityWidget> {
             latitude: _latitude,
             longitude: _longitude),
         ChooseOutfitButton(
-          callback: (forecast) => setState(() {
+          weatherCallback: (forecast) => setState(() {
             _forecast = forecast;
-            widget.callback(_forecast);
+            widget.weatherCallback(_forecast);
+          }),
+          outfitCallback: (outfit) => setState(() {
+            _outfit = outfit;
+            widget.outfitCallback(_outfit);
           }),
           context: context,
           chosenDateTime: _chosenDateTime,

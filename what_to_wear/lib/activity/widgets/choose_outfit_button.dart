@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
 
-typedef OutfitButtonCallback = void Function(WeatherForecast forecast);
+typedef WeatherForecastCallback = void Function(WeatherForecast forecast);
+typedef OutfitCallback = void Function(Outfit outfit);
 
 class ChooseOutfitButton extends StatelessWidget {
   ChooseOutfitButton(
       {Key? key,
-      required this.callback,
+      required this.weatherCallback,
+      required this.outfitCallback,
       required this.context,
       required this.chosenDateTime,
       required this.intensity,
@@ -15,7 +18,8 @@ class ChooseOutfitButton extends StatelessWidget {
       required this.longitude})
       : super(key: key);
 
-  final OutfitButtonCallback callback;
+  final WeatherForecastCallback weatherCallback;
+  final OutfitCallback outfitCallback;
   BuildContext context;
   DateTime chosenDateTime;
   ActivityIntensity? intensity;
@@ -69,13 +73,17 @@ class ChooseOutfitButton extends StatelessWidget {
         WeatherForecast forecast = await WeatherApiProvider()
             .getWeatherForecast(
                 latitude, longitude, forecastsCount, chosenDateTime);
-        callback(forecast);
+        weatherCallback(forecast);
+        Outfit outfit = Outfit(forecast.apparentTemperature, intensity,
+            forecast.cloudsPercentage, forecast.precipitationChance);
+        outfitCallback(outfit);
 
         print("FORECAST: " + forecast.toString());
         print("CHOSEN_DATE_TIME: " + chosenDateTime.toString());
         print("INTENSITY: " + intensity.toString());
         print("LAT: " + latitude);
         print("LONG: " + longitude);
+        print("OUTFIT: " + outfit.toString());
       }
     }
   }
