@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
+import 'package:what_to_wear/screens/activity_details_screen.dart';
 
 typedef WeatherForecastCallback = void Function(WeatherForecast forecast);
 typedef OutfitCallback = void Function(Outfit outfit);
@@ -84,6 +85,14 @@ class ChooseOutfitButton extends StatelessWidget {
         print("LAT: " + latitude);
         print("LONG: " + longitude);
         print("OUTFIT: " + outfit.toString());
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ActivityDetailsScreen(forecast: forecast, outfit: outfit),
+          ),
+        );
       }
     }
   }

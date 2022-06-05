@@ -19,38 +19,18 @@ class ActivityScreen extends StatefulWidget {
 class ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
-    if (widget.forecast == null) {
-      return Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ActivityWidget(
-              weatherCallback: (forecast) =>
-                  setState(() => widget.forecast = forecast),
-              outfitCallback: (outfit) =>
-                  setState(() => widget.outfit = outfit),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            WeatherWidget(forecast: widget.forecast),
-            OutfitWidget(outfit: widget.outfit),
-            ActivityWidget(
-              weatherCallback: (forecast) =>
-                  setState(() => widget.forecast = forecast),
-              outfitCallback: (outfit) =>
-                  setState(() => widget.outfit = outfit),
-            ),
-          ],
-        ),
-      );
-    }
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ActivityWidget(
+            weatherCallback: (forecast) =>
+                setState(() => widget.forecast = forecast),
+            outfitCallback: (outfit) => setState(() => widget.outfit = outfit),
+          ),
+        ],
+      ),
+    );
   }
 }
