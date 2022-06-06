@@ -17,14 +17,16 @@ class ActivityDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Pogoda i strój"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            WeatherWidget(forecast: forecast),
-            OutfitWidget(outfit: outfit),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              WeatherWidget(forecast: forecast),
+              OutfitWidget(outfit: outfit),
+            ],
+          ),
         ),
       ),
     );

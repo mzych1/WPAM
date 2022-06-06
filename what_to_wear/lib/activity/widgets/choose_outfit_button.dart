@@ -75,8 +75,12 @@ class ChooseOutfitButton extends StatelessWidget {
             .getWeatherForecast(
                 latitude, longitude, forecastsCount, chosenDateTime);
         weatherCallback(forecast);
-        Outfit outfit = Outfit(forecast.apparentTemperature, intensity,
-            forecast.cloudsPercentage, forecast.precipitationChance);
+        Outfit outfit = Outfit(
+            forecast.apparentTemperature,
+            intensity,
+            forecast.cloudsPercentage,
+            forecast.precipitationChance,
+            chosenDateTime.hour);
         outfitCallback(outfit);
 
         print("FORECAST: " + forecast.toString());
