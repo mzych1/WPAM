@@ -23,7 +23,8 @@ class OutfitWidgetState extends State<OutfitWidget> {
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               TextSpan(
-                  text: widget.outfit!.runningApparentTemperature.toString() +
+                  text: widget.outfit!.runningApparentTemperature
+                          .toStringAsFixed(1) +
                       ' °C',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18)),
@@ -36,7 +37,17 @@ class OutfitWidgetState extends State<OutfitWidget> {
           itemCount: widget.outfit!.clohesList.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(widget.outfit!.clohesList[index].name),
+              leading: Image.asset(
+                widget.outfit!.clohesList[index].iconFilename,
+                height: 40.0,
+                width: 40.0,
+              ),
+              title: Text(
+                widget.outfit!.clohesList[index].name,
+                style: const TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
               dense: false,
               contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
             );
