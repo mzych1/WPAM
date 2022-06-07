@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:what_to_wear/activity/activity_overview.dart';
 import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
@@ -16,7 +17,8 @@ class ChooseOutfitButton extends StatelessWidget {
       required this.chosenDateTime,
       required this.intensity,
       required this.latitude,
-      required this.longitude})
+      required this.longitude,
+      required this.location})
       : super(key: key);
 
   final WeatherForecastCallback weatherCallback;
@@ -26,6 +28,7 @@ class ChooseOutfitButton extends StatelessWidget {
   ActivityIntensity? intensity;
   String latitude;
   String longitude;
+  String location;
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +86,11 @@ class ChooseOutfitButton extends StatelessWidget {
             chosenDateTime.hour);
         outfitCallback(outfit);
 
+        ActivityOverview overview = ActivityOverview(
+            chosenDate: chosenDateTime,
+            location: location,
+            intensity: intensity);
+
         print("FORECAST: " + forecast.toString());
         print("CHOSEN_DATE_TIME: " + chosenDateTime.toString());
         print("INTENSITY: " + intensity.toString());
@@ -93,8 +101,8 @@ class ChooseOutfitButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ActivityDetailsScreen(forecast: forecast, outfit: outfit),
+            builder: (context) => ActivityDetailsScreen(
+                forecast: forecast, outfit: outfit, overview: overview),
           ),
         );
       }

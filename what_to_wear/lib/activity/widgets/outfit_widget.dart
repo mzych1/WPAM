@@ -15,22 +15,19 @@ class OutfitWidgetState extends State<OutfitWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // RichText(
-        //   text: TextSpan(
-        //     text: "Temp. odczuwalna podczas biegu: ",
-        //     style: DefaultTextStyle.of(context).style,
-        //     children: <TextSpan>[
-        //       TextSpan(
-        //           text: widget.outfit!.runningApparentTemperature
-        //                   .toStringAsFixed(1) +
-        //               ' °C',
-        //           style: const TextStyle(
-        //               fontWeight: FontWeight.bold, fontSize: 18)),
-        //     ],
-        //   ),
-        // ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          child: Text(
+            'PROPONOWANY STRÓJ',
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

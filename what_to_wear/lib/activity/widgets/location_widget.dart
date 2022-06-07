@@ -3,18 +3,21 @@ import 'package:uuid/uuid.dart';
 import 'package:what_to_wear/activity/cities_search.dart';
 import 'package:what_to_wear/activity/place_service.dart';
 
-typedef LocationCallback = void Function(String latitude, String longitude);
+typedef LocationCallback = void Function(
+    String latitude, String longitude, String location);
 
 class LocationWidget extends StatefulWidget {
   LocationWidget(
       {Key? key,
       required this.callback,
       required this.latitude,
-      required this.longitude})
+      required this.longitude,
+      required this.location})
       : super(key: key);
   final LocationCallback callback;
   String latitude;
   String longitude;
+  String location;
 
   @override
   LocationWidgetState createState() {
@@ -52,9 +55,10 @@ class LocationWidgetState extends State<LocationWidget> {
                 _controller.text = result.description;
                 widget.latitude = placeGeometry.latitude;
                 widget.longitude = placeGeometry.longitude;
+                widget.location = result.description;
               });
             }
-            widget.callback(widget.latitude, widget.longitude);
+            widget.callback(widget.latitude, widget.longitude, widget.location);
           },
           decoration: InputDecoration(
             icon: Container(

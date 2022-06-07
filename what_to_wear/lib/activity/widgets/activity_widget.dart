@@ -25,6 +25,7 @@ class ActivityWidget extends StatefulWidget {
 class ActivityWidgetState extends State<ActivityWidget> {
   DateTime _chosenDateTime = StartDateWidgetState.setStartDateTime();
   ActivityIntensity? _intensity = ActivityIntensity.medium;
+  String _location = '';
   String _latitude = '';
   String _longitude = '';
   WeatherForecast? _forecast;
@@ -50,12 +51,15 @@ class ActivityWidgetState extends State<ActivityWidget> {
           height: 20,
         ),
         LocationWidget(
-            callback: (latitude, longitude) => setState(() {
+            callback: (latitude, longitude, location) => setState(() {
                   _latitude = latitude;
                   _longitude = longitude;
+                  _location = location;
+                  print('Ustawiono location w ActivityWidget: ' + _location);
                 }),
             latitude: _latitude,
-            longitude: _longitude),
+            longitude: _longitude,
+            location: _location),
         ChooseOutfitButton(
           weatherCallback: (forecast) => setState(() {
             _forecast = forecast;
@@ -70,6 +74,7 @@ class ActivityWidgetState extends State<ActivityWidget> {
           intensity: _intensity,
           latitude: _latitude,
           longitude: _longitude,
+          location: _location,
         ),
       ],
     );

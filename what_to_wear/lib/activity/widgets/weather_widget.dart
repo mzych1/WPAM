@@ -18,6 +18,17 @@ class WeatherWidgetState extends State<WeatherWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          child: Text(
+            'POGODA',
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         Text(widget.forecast!.description,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         Row(
@@ -52,7 +63,7 @@ class WeatherWidgetState extends State<WeatherWidget> {
           ],
         ),
         const SizedBox(
-          height: 20,
+          height: 10,
         ),
         SizedBox(
           height: 3,
@@ -62,7 +73,7 @@ class WeatherWidgetState extends State<WeatherWidget> {
           ),
         ),
         const SizedBox(
-          height: 20,
+          height: 10,
         ),
       ],
     );
