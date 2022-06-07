@@ -19,10 +19,14 @@ enum OutfitPartType {
 }
 
 class OutfitPart {
-  OutfitPart({required this.name, required this.iconFilename});
+  OutfitPart(
+      {required this.name,
+      required this.iconFilename,
+      required this.isAccessory});
   String name;
   bool isUsed = false;
   String iconFilename;
+  bool isAccessory;
 
   void setIsUsed(bool isUsed) {
     this.isUsed = isUsed;
@@ -30,14 +34,15 @@ class OutfitPart {
 
   @override
   String toString() {
-    return 'OutfitPart(name: $name, isUsed: $isUsed)';
+    return 'OutfitPart(name: $name, isUsed: $isUsed, iconFilename: $iconFilename, isAccessory: $isAccessory)';
   }
 }
 
 class Outfit {
   late num runningApparentTemperature;
   late LinkedHashMap<OutfitPartType, OutfitPart> clothesMap;
-  late List<OutfitPart> clohesList;
+  late List<OutfitPart> basicClohesList;
+  late List<OutfitPart> accesoriesList;
 
   Outfit(num apparentTemperature, ActivityIntensity? intensity,
       num cloudsPercentage, num precipitationChance, num hour) {
@@ -45,7 +50,10 @@ class Outfit {
     _prepareClothesMap();
     _determineUsedClothes(
         apparentTemperature, cloudsPercentage, precipitationChance, hour);
-    clohesList = List.of(clothesMap.values.where((element) => element.isUsed));
+    basicClohesList = List.of(clothesMap.values
+        .where((element) => (element.isUsed & !element.isAccessory)));
+    accesoriesList = List.of(clothesMap.values
+        .where((element) => (element.isUsed & element.isAccessory)));
   }
 
   @override
@@ -74,35 +82,60 @@ class Outfit {
   void _prepareClothesMap() {
     clothesMap = LinkedHashMap<OutfitPartType, OutfitPart>();
 
-    clothesMap[OutfitPartType.singlet] =
-        OutfitPart(name: 'Singlet', iconFilename: 'assets/clothes/singlet.png');
-    clothesMap[OutfitPartType.tshirt] =
-        OutfitPart(name: 'T-shirt', iconFilename: 'assets/clothes/tshirt.png');
-    clothesMap[OutfitPartType.bluzka] =
-        OutfitPart(name: 'Bluzka', iconFilename: 'assets/clothes/bluzka.png');
+    clothesMap[OutfitPartType.singlet] = OutfitPart(
+        name: 'Singlet',
+        iconFilename: 'assets/clothes/singlet.png',
+        isAccessory: false);
+    clothesMap[OutfitPartType.tshirt] = OutfitPart(
+        name: 'T-shirt',
+        iconFilename: 'assets/clothes/tshirt.png',
+        isAccessory: false);
+    clothesMap[OutfitPartType.bluzka] = OutfitPart(
+        name: 'Bluzka',
+        iconFilename: 'assets/clothes/bluzka.png',
+        isAccessory: false);
     clothesMap[OutfitPartType.ortalion] = OutfitPart(
-        name: 'Ortalion', iconFilename: 'assets/clothes/ortalion.png');
-    clothesMap[OutfitPartType.kurtka] =
-        OutfitPart(name: 'Kurtka', iconFilename: 'assets/clothes/kurtka.png');
+        name: 'Ortalion',
+        iconFilename: 'assets/clothes/ortalion.png',
+        isAccessory: false);
+    clothesMap[OutfitPartType.kurtka] = OutfitPart(
+        name: 'Kurtka',
+        iconFilename: 'assets/clothes/kurtka.png',
+        isAccessory: false);
 
-    clothesMap[OutfitPartType.szorty] =
-        OutfitPart(name: 'Szorty', iconFilename: 'assets/clothes/szorty.png');
-    clothesMap[OutfitPartType.leginsy] =
-        OutfitPart(name: 'Leginsy', iconFilename: 'assets/clothes/leginsy.png');
+    clothesMap[OutfitPartType.szorty] = OutfitPart(
+        name: 'Szorty',
+        iconFilename: 'assets/clothes/szorty.png',
+        isAccessory: false);
+    clothesMap[OutfitPartType.leginsy] = OutfitPart(
+        name: 'Leginsy',
+        iconFilename: 'assets/clothes/leginsy.png',
+        isAccessory: false);
     clothesMap[OutfitPartType.ocieplaneLeginsy] = OutfitPart(
         name: 'Ocieplane leginsy',
-        iconFilename: 'assets/clothes/ocieplane_leginsy.png');
+        iconFilename: 'assets/clothes/ocieplane_leginsy.png',
+        isAccessory: false);
 
     clothesMap[OutfitPartType.kaszkiet] = OutfitPart(
-        name: 'Kaszkiet', iconFilename: 'assets/clothes/kaszkiet.png');
-    clothesMap[OutfitPartType.opaska] =
-        OutfitPart(name: 'Opaska', iconFilename: 'assets/clothes/opaska.png');
-    clothesMap[OutfitPartType.czapka] =
-        OutfitPart(name: 'Czapka', iconFilename: 'assets/clothes/czapka.png');
-    clothesMap[OutfitPartType.komin] =
-        OutfitPart(name: 'Komin', iconFilename: 'assets/clothes/komin.png');
+        name: 'Kaszkiet',
+        iconFilename: 'assets/clothes/kaszkiet.png',
+        isAccessory: true);
+    clothesMap[OutfitPartType.opaska] = OutfitPart(
+        name: 'Opaska',
+        iconFilename: 'assets/clothes/opaska.png',
+        isAccessory: true);
+    clothesMap[OutfitPartType.czapka] = OutfitPart(
+        name: 'Czapka',
+        iconFilename: 'assets/clothes/czapka.png',
+        isAccessory: true);
+    clothesMap[OutfitPartType.komin] = OutfitPart(
+        name: 'Komin',
+        iconFilename: 'assets/clothes/komin.png',
+        isAccessory: true);
     clothesMap[OutfitPartType.rekawiczki] = OutfitPart(
-        name: 'Rękawiczki', iconFilename: 'assets/clothes/rekawiczki.png');
+        name: 'Rękawiczki',
+        iconFilename: 'assets/clothes/rekawiczki.png',
+        isAccessory: true);
   }
 
   void _determineUsedClothes(num apparentTemperature, num cloudsPercentage,
