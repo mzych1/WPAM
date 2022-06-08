@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+typedef AccountCallback = void Function(GoogleSignInAccount? account);
+
 class SignInButton extends StatefulWidget {
-  const SignInButton({Key? key}) : super(key: key);
+  const SignInButton({Key? key, required this.accountCallback})
+      : super(key: key);
+
+  final AccountCallback accountCallback;
 
   @override
   State<SignInButton> createState() => _SignInButtonState();
@@ -17,6 +22,7 @@ class _SignInButtonState extends State<SignInButton> {
     _googleSignIn.onCurrentUserChanged.listen((account) {
       setState(() {
         _currentUser = account;
+        widget.accountCallback(_currentUser);
       });
     });
     _googleSignIn.signInSilently();

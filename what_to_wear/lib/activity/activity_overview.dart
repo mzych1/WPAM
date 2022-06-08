@@ -17,7 +17,7 @@ class ActivityOverview {
   }
 
   String getDateTime() {
-    return DateFormat('dd.MM.yyyy  kk:mm').format(chosenDate);
+    return DateFormat('dd.MM.yyyy  HH:mm').format(chosenDate);
   }
 
   String getIntensity() {

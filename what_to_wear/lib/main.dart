@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         scaffoldBackgroundColor: const Color.fromARGB(255, 199, 197, 228),
       ),
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }
