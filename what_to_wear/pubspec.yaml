@@ -39,6 +39,8 @@ dependencies:
   auto_size_text: ^3.0.0
   http: ^0.13.4
   uuid: ^3.0.6
+  firebase_database: ^9.0.15
+  firebase_core: ^1.17.1
 
 dev_dependencies:
   flutter_test:
