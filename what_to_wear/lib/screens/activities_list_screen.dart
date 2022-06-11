@@ -25,17 +25,41 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
       FirebaseFirestore.instance.collection('activities');
 
   // Deleteing a product by id
-  Future<void> _deleteProduct(String activityId) async {
-    await _activities.doc(activityId).delete();
-
-    // Show a snackbar
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Usunięto aktywność')));
+  Future<void> _deleteActivity(String activityId) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const Text("Czy na pewno chcesz usunąć aktywność?"),
+          actions: [
+            TextButton(
+              child: const Text("NIE"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("TAK"),
+              onPressed: () async {
+                await _activities.doc(activityId).delete();
+                Navigator.of(context).pop();
+                // Show a snackbar
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Usunięto aktywność'),
+                      duration: Duration(seconds: 1)),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _addActivity() async {
-    await _activities.add(
-        {"location": 'Lublin, Polska', "date": DateTime(2022, 6, 15, 15, 30)});
+    await _activities
+        .add({"location": 'Lublin, Polska', "date": DateTime.now()});
   }
 
   @override
@@ -81,7 +105,7 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                             IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () =>
-                                    _deleteProduct(documentSnapshot.id)),
+                                    _deleteActivity(documentSnapshot.id)),
                           ],
                         ),
                       ),
