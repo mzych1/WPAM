@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:what_to_wear/auth/google_sign_in.dart';
-import 'package:what_to_wear/model/activity.dart';
+import 'package:intl/intl.dart';
 
-final databaseReference = FirebaseDatabase.instance.ref('activities');
 typedef AccountCallback = void Function(GoogleSignInAccount? account);
+DateFormat dateFormat = DateFormat("dd.MM.yyyy HH:mm");
 
 class ActivitiesListScreen extends StatefulWidget {
   ActivitiesListScreen(
@@ -35,8 +34,8 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
   }
 
   Future<void> _addActivity() async {
-    await _activities
-        .add({"location": 'Lublin, Polska', "date": '15.06.2022 10:50'});
+    await _activities.add(
+        {"location": 'Lublin, Polska', "date": DateTime(2022, 6, 15, 15, 30)});
   }
 
   @override
@@ -55,9 +54,10 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
       ),
       body: SingleChildScrollView(
         child: StreamBuilder(
-          stream: _activities.snapshots(),
+          stream: _activities.orderBy('date', descending: true).snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-            if (streamSnapshot.hasData) {
+            if (streamSnapshot.hasData &&
+                streamSnapshot.data!.docs.isNotEmpty) {
               return ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
@@ -66,12 +66,15 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                   final DocumentSnapshot documentSnapshot =
                       streamSnapshot.data!.docs[index];
                   return Card(
-                    margin: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(5),
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    elevation: 5,
                     child: ListTile(
-                      title: Text(documentSnapshot['location']),
-                      subtitle: Text(documentSnapshot['date'].toString()),
+                      title: Text(dateFormat.format(
+                          (documentSnapshot['date'] as Timestamp).toDate())),
+                      subtitle: Text(documentSnapshot['location']),
                       trailing: SizedBox(
-                        width: 100,
+                        width: 50,
                         child: Row(
                           children: [
                             // This icon button is used to delete a single product
@@ -86,9 +89,21 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                   );
                 },
               );
+            } else if (streamSnapshot.hasData &&
+                streamSnapshot.data!.docs.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'Nie dodano jeszcze żadnych aktywności. Dodaj aktywność za pomocą przycisku z plusem.',
+                  style: TextStyle(fontSize: 18),
+                ),
+              );
             } else {
-              return const Center(
-                child: CircularProgressIndicator(),
+              return SizedBox(
+                height: MediaQuery.of(context).size.height / 1.3,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             }
           },
@@ -99,38 +114,5 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.all(20.0),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       children: const [
-  //         Text(
-  //           'Nie dodano jeszcze żadnych aktywności. Dodaj aktywność za pomocą przycisku z plusem.',
-  //           style: TextStyle(fontSize: 18),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-}
-
-class MakeCall {
-  List<ActivityListItem> listItems = [];
-
-  Future<List<ActivityListItem>> firebaseCalls(
-      DatabaseReference databaseReference) async {
-    ActivityList activityList;
-    await databaseReference.once().then((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>;
-      activityList = ActivityList.fromJSON(data);
-      listItems.addAll(activityList.activityList);
-      print('data : $data');
-    });
-
-    return listItems;
   }
 }

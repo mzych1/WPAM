@@ -32,7 +32,7 @@ class CitiesSearch extends SearchDelegate<Suggestion> {
   ThemeData appBarTheme(BuildContext context) {
     return Theme.of(context).copyWith(
         appBarTheme: AppBarTheme(
-            backgroundColor: Theme.of(context).colorScheme.background));
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor));
   }
 
   @override
