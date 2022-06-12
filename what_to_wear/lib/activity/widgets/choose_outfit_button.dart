@@ -120,7 +120,33 @@ class ChooseOutfitButton extends StatelessWidget {
             ),
           );
         } else if (mode == ActivityMode.add) {
-          await _activities.add({"location": location, "date": chosenDateTime});
+          await _activities.add({
+            "location": location,
+            "date": chosenDateTime,
+            "intensity": getIntensityName(intensity),
+            "longitude": longitude,
+            "latitude": latitude,
+            "weather_description": forecast.description,
+            "temperature": forecast.temperature,
+            "wind": forecast.windSpeed,
+            "clouds": forecast.cloudsPercentage,
+            "weather_image_url": forecast.imageUrl,
+            "precipitation_chance": forecast.precipitationChance,
+            "singlet": outfit.clothesMap[OutfitPartType.singlet]?.isUsed,
+            "tshirt": outfit.clothesMap[OutfitPartType.tshirt]?.isUsed,
+            "bluzka": outfit.clothesMap[OutfitPartType.bluzka]?.isUsed,
+            "ortalion": outfit.clothesMap[OutfitPartType.ortalion]?.isUsed,
+            "kurtka": outfit.clothesMap[OutfitPartType.kurtka]?.isUsed,
+            "szorty": outfit.clothesMap[OutfitPartType.szorty]?.isUsed,
+            "leginsy": outfit.clothesMap[OutfitPartType.leginsy]?.isUsed,
+            "ocieplaneLeginsy":
+                outfit.clothesMap[OutfitPartType.ocieplaneLeginsy]?.isUsed,
+            "opaska": outfit.clothesMap[OutfitPartType.opaska]?.isUsed,
+            "czapka": outfit.clothesMap[OutfitPartType.czapka]?.isUsed,
+            "komin": outfit.clothesMap[OutfitPartType.komin]?.isUsed,
+            "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
+            "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
+          });
           modeCallback(ActivityMode.details);
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -136,6 +162,16 @@ class ChooseOutfitButton extends StatelessWidget {
           );
         }
       }
+    }
+  }
+
+  String getIntensityName(ActivityIntensity? intensity) {
+    if (intensity == ActivityIntensity.low) {
+      return "Niska";
+    } else if (intensity == ActivityIntensity.high) {
+      return "Wysoka";
+    } else {
+      return "Umiarkowana";
     }
   }
 }
