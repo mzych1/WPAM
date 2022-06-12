@@ -5,16 +5,23 @@ import 'package:what_to_wear/activity/widgets/choose_outfit_button.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
 import 'package:what_to_wear/activity/widgets/location_widget.dart';
 import 'package:what_to_wear/activity/widgets/start_date_widget.dart';
+import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 typedef WeatherCallback = void Function(WeatherForecast? forecast);
 typedef OutfitCallback = void Function(Outfit? outfit);
 
 class ActivityWidget extends StatefulWidget {
-  const ActivityWidget(
-      {Key? key, required this.weatherCallback, required this.outfitCallback})
+  ActivityWidget(
+      {Key? key,
+      required this.weatherCallback,
+      required this.outfitCallback,
+      required this.mode,
+      this.modeCallback})
       : super(key: key);
   final WeatherCallback weatherCallback;
   final OutfitCallback outfitCallback;
+  ActivityMode mode;
+  final ModeCallback? modeCallback;
 
   @override
   ActivityWidgetState createState() {
@@ -75,6 +82,11 @@ class ActivityWidgetState extends State<ActivityWidget> {
           latitude: _latitude,
           longitude: _longitude,
           location: _location,
+          mode: widget.mode,
+          modeCallback: (ActivityMode mode) => setState(() {
+            widget.mode = mode;
+            widget.modeCallback!(widget.mode);
+          }),
         ),
       ],
     );

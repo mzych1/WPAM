@@ -1,12 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:what_to_wear/activity/activity_overview.dart';
 import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
 import 'package:what_to_wear/screens/activity_details_screen.dart';
+import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 typedef WeatherForecastCallback = void Function(WeatherForecast forecast);
 typedef OutfitCallback = void Function(Outfit outfit);
+typedef ModeCallback = void Function(ActivityMode mode);
+final CollectionReference _activities =
+    FirebaseFirestore.instance.collection('activities');
 
 class ChooseOutfitButton extends StatelessWidget {
   ChooseOutfitButton(
@@ -18,7 +23,9 @@ class ChooseOutfitButton extends StatelessWidget {
       required this.intensity,
       required this.latitude,
       required this.longitude,
-      required this.location})
+      required this.location,
+      required this.mode,
+      required this.modeCallback})
       : super(key: key);
 
   final WeatherForecastCallback weatherCallback;
@@ -29,6 +36,8 @@ class ChooseOutfitButton extends StatelessWidget {
   String latitude;
   String longitude;
   String location;
+  ActivityMode mode;
+  final ModeCallback modeCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -97,14 +106,35 @@ class ChooseOutfitButton extends StatelessWidget {
         print("LAT: " + latitude);
         print("LONG: " + longitude);
         print("OUTFIT: " + outfit.toString());
+        print("MODE: " + mode.toString());
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ActivityDetailsScreen(
-                forecast: forecast, outfit: outfit, overview: overview),
-          ),
-        );
+        if (mode == ActivityMode.loggedOut) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ActivityDetailsScreen(
+                forecast: forecast,
+                outfit: outfit,
+                overview: overview,
+              ),
+            ),
+          );
+        } else if (mode == ActivityMode.add) {
+          await _activities.add({"location": location, "date": chosenDateTime});
+          modeCallback(ActivityMode.details);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Dodano aktywność - TODO'),
+                duration: Duration(seconds: 1)),
+          );
+        } else if (mode == ActivityMode.edit) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Zedytowano aktywność - TODO'),
+                duration: Duration(seconds: 1)),
+          );
+        }
       }
     }
   }

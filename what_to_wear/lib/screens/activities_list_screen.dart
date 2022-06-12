@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:what_to_wear/auth/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 typedef AccountCallback = void Function(GoogleSignInAccount? account);
 DateFormat dateFormat = DateFormat("dd.MM.yyyy HH:mm");
@@ -134,7 +135,16 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _addActivity(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserActivityScreen(
+                mode: ActivityMode.add,
+              ),
+            ),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );

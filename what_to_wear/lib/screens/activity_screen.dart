@@ -4,6 +4,7 @@ import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/activity_widget.dart';
 import 'package:what_to_wear/activity/widgets/outfit_widget.dart';
 import 'package:what_to_wear/activity/widgets/weather_widget.dart';
+import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 class ActivityScreen extends StatefulWidget {
   ActivityScreen({Key? key}) : super(key: key);
@@ -28,6 +29,7 @@ class ActivityScreenState extends State<ActivityScreen> {
             weatherCallback: (forecast) =>
                 setState(() => widget.forecast = forecast),
             outfitCallback: (outfit) => setState(() => widget.outfit = outfit),
+            mode: ActivityMode.loggedOut,
           ),
         ],
       ),
