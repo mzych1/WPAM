@@ -17,6 +17,13 @@ class UserActivityScreen extends StatefulWidget {
   ActivityMode mode;
 
   UserActivityScreen({Key? key, required this.mode}) : super(key: key);
+  UserActivityScreen.fromSnapshot(
+      {Key? key, required this.mode, required snapshot})
+      : super(key: key) {
+    forecast = WeatherForecast.fromSnapshot(snapshot);
+    outfit = Outfit.fromSnapshot(snapshot);
+    overview = ActivityOverview.fromSnapshot(snapshot);
+  }
 
   @override
   State<UserActivityScreen> createState() => UserActivityScreenState();

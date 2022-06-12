@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
 
 enum OutfitPartType {
@@ -50,6 +51,35 @@ class Outfit {
     _prepareClothesMap();
     _determineUsedClothes(
         apparentTemperature, cloudsPercentage, precipitationChance, hour);
+    basicClohesList = List.of(clothesMap.values
+        .where((element) => (element.isUsed & !element.isAccessory)));
+    accesoriesList = List.of(clothesMap.values
+        .where((element) => (element.isUsed & element.isAccessory)));
+  }
+
+  Outfit.fromSnapshot(DocumentSnapshot snapshot) {
+    runningApparentTemperature =
+        snapshot['running_apparent_temperature'] as num;
+    _prepareClothesMap();
+
+    clothesMap[OutfitPartType.singlet]!.setIsUsed(snapshot['singlet'] as bool);
+    clothesMap[OutfitPartType.tshirt]!.setIsUsed(snapshot['tshirt'] as bool);
+    clothesMap[OutfitPartType.bluzka]!.setIsUsed(snapshot['bluzka'] as bool);
+    clothesMap[OutfitPartType.ortalion]!
+        .setIsUsed(snapshot['ortalion'] as bool);
+    clothesMap[OutfitPartType.kurtka]!.setIsUsed(snapshot['kurtka'] as bool);
+    clothesMap[OutfitPartType.szorty]!.setIsUsed(snapshot['szorty'] as bool);
+    clothesMap[OutfitPartType.leginsy]!.setIsUsed(snapshot['leginsy'] as bool);
+    clothesMap[OutfitPartType.ocieplaneLeginsy]!
+        .setIsUsed(snapshot['ocieplaneLeginsy'] as bool);
+    clothesMap[OutfitPartType.kaszkiet]!
+        .setIsUsed(snapshot['kaszkiet'] as bool);
+    clothesMap[OutfitPartType.czapka]!.setIsUsed(snapshot['czapka'] as bool);
+    clothesMap[OutfitPartType.opaska]!.setIsUsed(snapshot['opaska'] as bool);
+    clothesMap[OutfitPartType.rekawiczki]!
+        .setIsUsed(snapshot['rekawiczki'] as bool);
+    clothesMap[OutfitPartType.komin]!.setIsUsed(snapshot['komin'] as bool);
+
     basicClohesList = List.of(clothesMap.values
         .where((element) => (element.isUsed & !element.isAccessory)));
     accesoriesList = List.of(clothesMap.values

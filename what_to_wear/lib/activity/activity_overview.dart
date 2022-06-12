@@ -1,15 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
 import 'package:intl/intl.dart';
 
 class ActivityOverview {
-  DateTime chosenDate;
-  String location;
+  late DateTime chosenDate;
+  late String location;
   ActivityIntensity? intensity;
 
   ActivityOverview(
       {required this.chosenDate,
       required this.location,
       required this.intensity});
+
+  ActivityOverview.fromSnapshot(DocumentSnapshot snapshot) {
+    chosenDate = (snapshot['date'] as Timestamp).toDate();
+    location = snapshot['location'];
+    String intensityString = snapshot['intensity'];
+    if (intensityString == "Niska") {
+      intensity = ActivityIntensity.low;
+    } else if (intensityString == "Wysoka") {
+      intensity = ActivityIntensity.high;
+    } else {
+      intensity = ActivityIntensity.medium;
+    }
+  }
 
   @override
   String toString() {

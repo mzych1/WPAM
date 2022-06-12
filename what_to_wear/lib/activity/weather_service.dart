@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:what_to_wear/auth/secrets.dart';
@@ -12,7 +13,7 @@ class WeatherForecast {
   late num cloudsPercentage; // 0-100
   late num windSpeed; // m/s
   late num precipitationChance; // 0-100
-  late DateTime forecastDate; // polish time zone (GMT+2)
+  // late DateTime forecastDate; // polish time zone (GMT+2)
 
   WeatherForecast.fromJson(var jsonForecast) {
     temperature = jsonForecast['main']['temp'];
@@ -26,14 +27,24 @@ class WeatherForecast {
     cloudsPercentage = jsonForecast['clouds']['all'];
     windSpeed = jsonForecast['wind']['speed'];
     precipitationChance = jsonForecast['pop'] * 100;
-    forecastDate =
-        DateTime.parse(jsonForecast['dt_txt']).add(const Duration(hours: 2));
+    // forecastDate =
+    //     DateTime.parse(jsonForecast['dt_txt']).add(const Duration(hours: 2));
+  }
+
+  WeatherForecast.fromSnapshot(DocumentSnapshot snapshot) {
+    temperature = snapshot['temperature'] as num;
+    apparentTemperature = snapshot['apparent_temperature'] as num;
+    description = snapshot['weather_description'];
+    imageUrl = snapshot['weather_image_url'];
+    cloudsPercentage = snapshot['clouds'] as num;
+    windSpeed = snapshot['wind'] as num;
+    precipitationChance = snapshot['precipitation_chance'] as num;
   }
 
   @override
   String toString() {
     return 'WeatherForecast(temperature: $temperature, apparentTemperature: $apparentTemperature, description: $description, iconId: $imageUrl, cloudsPercentage: $cloudsPercentage, ' +
-        'windSpeed: $windSpeed, precipitationChance: $precipitationChance, forecastDate: $forecastDate)';
+        'windSpeed: $windSpeed, precipitationChance: $precipitationChance)';
   }
 }
 

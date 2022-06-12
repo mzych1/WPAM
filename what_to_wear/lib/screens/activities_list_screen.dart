@@ -98,6 +98,18 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                       title: Text(dateFormat.format(
                           (documentSnapshot['date'] as Timestamp).toDate())),
                       subtitle: Text(documentSnapshot['location']),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserActivityScreen.fromSnapshot(
+                              mode: ActivityMode.details,
+                              snapshot: documentSnapshot,
+                            ),
+                          ),
+                        );
+                      },
                       trailing: SizedBox(
                         width: 50,
                         child: Row(
