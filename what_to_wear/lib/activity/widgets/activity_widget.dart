@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:what_to_wear/activity/activity_overview.dart';
 import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/choose_outfit_button.dart';
@@ -9,6 +10,7 @@ import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 typedef WeatherCallback = void Function(WeatherForecast? forecast);
 typedef OutfitCallback = void Function(Outfit? outfit);
+typedef OverviewCallback = void Function(ActivityOverview? overview);
 
 class ActivityWidget extends StatefulWidget {
   ActivityWidget(
@@ -16,12 +18,14 @@ class ActivityWidget extends StatefulWidget {
       required this.weatherCallback,
       required this.outfitCallback,
       required this.mode,
-      this.modeCallback})
+      this.modeCallback,
+      this.overviewCallback})
       : super(key: key);
   final WeatherCallback weatherCallback;
   final OutfitCallback outfitCallback;
   ActivityMode mode;
   final ModeCallback? modeCallback;
+  final OverviewCallback? overviewCallback;
 
   @override
   ActivityWidgetState createState() {
@@ -86,6 +90,10 @@ class ActivityWidgetState extends State<ActivityWidget> {
           modeCallback: (ActivityMode mode) => setState(() {
             widget.mode = mode;
             widget.modeCallback!(widget.mode);
+            widget.overviewCallback!(ActivityOverview(
+                chosenDate: _chosenDateTime,
+                location: _location,
+                intensity: _intensity));
           }),
         ),
       ],

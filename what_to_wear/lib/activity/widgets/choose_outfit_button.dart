@@ -151,7 +151,7 @@ class ChooseOutfitButton extends StatelessWidget {
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('Dodano aktywność - TODO'),
+                content: Text('Dodano aktywność'),
                 duration: Duration(seconds: 1)),
           );
         } else if (mode == ActivityMode.edit) {

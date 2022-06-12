@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:what_to_wear/activity/activity_overview.dart';
 import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
+import 'package:what_to_wear/activity/widgets/activity_overview_widget.dart';
 import 'package:what_to_wear/activity/widgets/activity_widget.dart';
+import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
+import 'package:what_to_wear/activity/widgets/outfit_widget.dart';
+import 'package:what_to_wear/activity/widgets/weather_widget.dart';
 
 enum ActivityMode { add, edit, details, loggedOut }
 
 class UserActivityScreen extends StatefulWidget {
   WeatherForecast? forecast;
   Outfit? outfit;
+  ActivityOverview? overview;
   ActivityMode mode;
 
   UserActivityScreen({Key? key, required this.mode}) : super(key: key);
@@ -39,6 +45,9 @@ class UserActivityScreenState extends State<UserActivityScreen> {
                   modeCallback: (ActivityMode mode) => setState(() {
                     widget.mode = mode;
                   }),
+                  overviewCallback: (overview) => setState(() {
+                    widget.overview = overview;
+                  }),
                 ),
               ],
             ),
@@ -65,7 +74,7 @@ class UserActivityScreenState extends State<UserActivityScreen> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Szczegóły'),
+          title: const Text("Pogoda i strój"),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -73,7 +82,9 @@ class UserActivityScreenState extends State<UserActivityScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("tryb details"),
+                ActivityOverviewWidget(overview: widget.overview),
+                WeatherWidget(forecast: widget.forecast),
+                OutfitWidget(outfit: widget.outfit),
               ],
             ),
           ),

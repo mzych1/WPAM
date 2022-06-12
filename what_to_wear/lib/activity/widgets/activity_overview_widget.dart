@@ -3,8 +3,8 @@ import 'package:what_to_wear/activity/activity_overview.dart';
 import 'package:what_to_wear/activity/widgets/weather_info_widget.dart';
 
 class ActivityOverviewWidget extends StatefulWidget {
-  ActivityOverviewWidget({Key? key, required this.overview}) : super(key: key);
-  ActivityOverview overview;
+  ActivityOverviewWidget({Key? key, this.overview}) : super(key: key);
+  ActivityOverview? overview;
 
   @override
   ActivityOverviewWidgetState createState() {
@@ -30,12 +30,12 @@ class ActivityOverviewWidgetState extends State<ActivityOverviewWidget> {
           ),
         ),
         WeatherInfoWidget(
-            normalText: "Lokalizacja: ", boldText: widget.overview.location),
+            normalText: "Lokalizacja: ", boldText: widget.overview!.location),
         WeatherInfoWidget(
-            normalText: "Data: ", boldText: widget.overview.getDateTime()),
+            normalText: "Data: ", boldText: widget.overview!.getDateTime()),
         WeatherInfoWidget(
             normalText: "Intensywność: ",
-            boldText: widget.overview.getIntensity()),
+            boldText: widget.overview!.getIntensity()),
         const SizedBox(
           height: 10,
         ),
