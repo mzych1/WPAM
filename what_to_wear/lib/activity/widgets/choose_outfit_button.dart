@@ -15,15 +15,16 @@ final CollectionReference _activities =
     FirebaseFirestore.instance.collection('activities');
 
 class ChooseOutfitButton extends StatelessWidget {
-  ChooseOutfitButton(
-      {Key? key,
-      required this.weatherCallback,
-      required this.outfitCallback,
-      required this.context,
-      required this.overview,
-      required this.mode,
-      required this.modeCallback})
-      : super(key: key);
+  ChooseOutfitButton({
+    Key? key,
+    required this.weatherCallback,
+    required this.outfitCallback,
+    required this.context,
+    required this.overview,
+    required this.mode,
+    required this.modeCallback,
+    this.userId,
+  }) : super(key: key);
 
   final WeatherForecastCallback weatherCallback;
   final OutfitCallback outfitCallback;
@@ -31,6 +32,7 @@ class ChooseOutfitButton extends StatelessWidget {
   ActivityOverview overview;
   ActivityMode mode;
   final ModeCallback modeCallback;
+  String? userId;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +79,11 @@ class ChooseOutfitButton extends StatelessWidget {
               duration: Duration(seconds: 3)),
         );
       } else {
+        if (userId == null) {
+          print("USER_ID: null");
+        } else {
+          print("USER_ID: " + userId!);
+        }
         int forecastsCount = (difference.inHours / 3).floor() + 2;
         WeatherForecast forecast = await WeatherApiProvider()
             .getWeatherForecast(overview.latitude, overview.longitude,
@@ -102,35 +109,8 @@ class ChooseOutfitButton extends StatelessWidget {
             ),
           );
         } else if (mode == ActivityMode.add) {
-          DocumentReference newActivity = await _activities.add({
-            "location": overview.location,
-            "date": overview.chosenDate,
-            "intensity": getIntensityName(overview.intensity),
-            "longitude": overview.longitude,
-            "latitude": overview.latitude,
-            "weather_description": forecast.description,
-            "temperature": forecast.temperature,
-            "apparent_temperature": forecast.apparentTemperature,
-            "wind": forecast.windSpeed,
-            "clouds": forecast.cloudsPercentage,
-            "weather_image_url": forecast.imageUrl,
-            "precipitation_chance": forecast.precipitationChance,
-            "running_apparent_temperature": outfit.runningApparentTemperature,
-            "singlet": outfit.clothesMap[OutfitPartType.singlet]?.isUsed,
-            "tshirt": outfit.clothesMap[OutfitPartType.tshirt]?.isUsed,
-            "bluzka": outfit.clothesMap[OutfitPartType.bluzka]?.isUsed,
-            "ortalion": outfit.clothesMap[OutfitPartType.ortalion]?.isUsed,
-            "kurtka": outfit.clothesMap[OutfitPartType.kurtka]?.isUsed,
-            "szorty": outfit.clothesMap[OutfitPartType.szorty]?.isUsed,
-            "leginsy": outfit.clothesMap[OutfitPartType.leginsy]?.isUsed,
-            "ocieplaneLeginsy":
-                outfit.clothesMap[OutfitPartType.ocieplaneLeginsy]?.isUsed,
-            "opaska": outfit.clothesMap[OutfitPartType.opaska]?.isUsed,
-            "czapka": outfit.clothesMap[OutfitPartType.czapka]?.isUsed,
-            "komin": outfit.clothesMap[OutfitPartType.komin]?.isUsed,
-            "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
-            "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
-          });
+          DocumentReference newActivity =
+              await _activities.add(prepareActivityDocument(forecast, outfit));
           print("1 - overview: " + overview.toString());
           overview.activityId = newActivity.id;
           print("2 - overview: " + overview.toString());
@@ -143,35 +123,9 @@ class ChooseOutfitButton extends StatelessWidget {
           );
         } else if (mode == ActivityMode.edit) {
           print('ACTIVITY ID: ' + overview.activityId.toString());
-          await _activities.doc(overview.activityId).update({
-            "location": overview.location,
-            "date": overview.chosenDate,
-            "intensity": getIntensityName(overview.intensity),
-            "longitude": overview.longitude,
-            "latitude": overview.latitude,
-            "weather_description": forecast.description,
-            "temperature": forecast.temperature,
-            "apparent_temperature": forecast.apparentTemperature,
-            "wind": forecast.windSpeed,
-            "clouds": forecast.cloudsPercentage,
-            "weather_image_url": forecast.imageUrl,
-            "precipitation_chance": forecast.precipitationChance,
-            "running_apparent_temperature": outfit.runningApparentTemperature,
-            "singlet": outfit.clothesMap[OutfitPartType.singlet]?.isUsed,
-            "tshirt": outfit.clothesMap[OutfitPartType.tshirt]?.isUsed,
-            "bluzka": outfit.clothesMap[OutfitPartType.bluzka]?.isUsed,
-            "ortalion": outfit.clothesMap[OutfitPartType.ortalion]?.isUsed,
-            "kurtka": outfit.clothesMap[OutfitPartType.kurtka]?.isUsed,
-            "szorty": outfit.clothesMap[OutfitPartType.szorty]?.isUsed,
-            "leginsy": outfit.clothesMap[OutfitPartType.leginsy]?.isUsed,
-            "ocieplaneLeginsy":
-                outfit.clothesMap[OutfitPartType.ocieplaneLeginsy]?.isUsed,
-            "opaska": outfit.clothesMap[OutfitPartType.opaska]?.isUsed,
-            "czapka": outfit.clothesMap[OutfitPartType.czapka]?.isUsed,
-            "komin": outfit.clothesMap[OutfitPartType.komin]?.isUsed,
-            "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
-            "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
-          });
+          await _activities
+              .doc(overview.activityId)
+              .update(prepareActivityDocument(forecast, outfit));
 
           modeCallback(ActivityMode.details, overview);
 
@@ -183,6 +137,40 @@ class ChooseOutfitButton extends StatelessWidget {
         }
       }
     }
+  }
+
+  Map<String, Object?> prepareActivityDocument(
+      WeatherForecast forecast, Outfit outfit) {
+    return {
+      "user_id": userId,
+      "location": overview.location,
+      "date": overview.chosenDate,
+      "intensity": getIntensityName(overview.intensity),
+      "longitude": overview.longitude,
+      "latitude": overview.latitude,
+      "weather_description": forecast.description,
+      "temperature": forecast.temperature,
+      "apparent_temperature": forecast.apparentTemperature,
+      "wind": forecast.windSpeed,
+      "clouds": forecast.cloudsPercentage,
+      "weather_image_url": forecast.imageUrl,
+      "precipitation_chance": forecast.precipitationChance,
+      "running_apparent_temperature": outfit.runningApparentTemperature,
+      "singlet": outfit.clothesMap[OutfitPartType.singlet]?.isUsed,
+      "tshirt": outfit.clothesMap[OutfitPartType.tshirt]?.isUsed,
+      "bluzka": outfit.clothesMap[OutfitPartType.bluzka]?.isUsed,
+      "ortalion": outfit.clothesMap[OutfitPartType.ortalion]?.isUsed,
+      "kurtka": outfit.clothesMap[OutfitPartType.kurtka]?.isUsed,
+      "szorty": outfit.clothesMap[OutfitPartType.szorty]?.isUsed,
+      "leginsy": outfit.clothesMap[OutfitPartType.leginsy]?.isUsed,
+      "ocieplaneLeginsy":
+          outfit.clothesMap[OutfitPartType.ocieplaneLeginsy]?.isUsed,
+      "opaska": outfit.clothesMap[OutfitPartType.opaska]?.isUsed,
+      "czapka": outfit.clothesMap[OutfitPartType.czapka]?.isUsed,
+      "komin": outfit.clothesMap[OutfitPartType.komin]?.isUsed,
+      "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
+      "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
+    };
   }
 
   String getIntensityName(ActivityIntensity? intensity) {

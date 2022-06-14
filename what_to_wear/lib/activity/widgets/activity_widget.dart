@@ -13,14 +13,15 @@ typedef OutfitCallback = void Function(Outfit? outfit);
 typedef OverviewCallback = void Function(ActivityOverview? overview);
 
 class ActivityWidget extends StatefulWidget {
-  ActivityWidget(
-      {Key? key,
-      required this.weatherCallback,
-      required this.outfitCallback,
-      required this.mode,
-      this.modeCallback,
-      this.overviewCallback})
-      : super(key: key) {
+  ActivityWidget({
+    Key? key,
+    required this.weatherCallback,
+    required this.outfitCallback,
+    required this.mode,
+    this.modeCallback,
+    this.overviewCallback,
+    this.userId,
+  }) : super(key: key) {
     print("Tworzenie nowego overview");
     overview = ActivityOverview(
       chosenDate: StartDateWidgetState.setStartDateTime(),
@@ -39,6 +40,7 @@ class ActivityWidget extends StatefulWidget {
       required this.mode,
       required this.modeCallback,
       required this.overviewCallback,
+      this.userId,
       overview})
       : super(key: key) {
     if (overview == null) {
@@ -60,6 +62,7 @@ class ActivityWidget extends StatefulWidget {
   final ModeCallback? modeCallback;
   final OverviewCallback? overviewCallback;
   late ActivityOverview overview;
+  String? userId;
 
   @override
   ActivityWidgetState createState() {
@@ -129,14 +132,8 @@ class ActivityWidgetState extends State<ActivityWidget> {
             widget.overviewCallback!(widget.overview);
             print("ACTIVIY_WIDGET OVERVIEW modeCallback-2: " +
                 widget.overview.toString());
-
-            // ActivityOverview(
-            //   chosenDate: widget.overview.chosenDate,
-            //   location: widget.overview.location,
-            //   intensity: widget.overview.intensity,
-            //   latitude: widget.overview.latitude,
-            //   longitude: widget.overview.longitude));
           }),
+          userId: widget.userId,
         ),
       ],
     );

@@ -58,11 +58,6 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
     );
   }
 
-  Future<void> _addActivity() async {
-    await _activities
-        .add({"location": 'Lublin, Polska', "date": DateTime.now()});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +74,10 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
       ),
       body: SingleChildScrollView(
         child: StreamBuilder(
-          stream: _activities.orderBy('date', descending: true).snapshots(),
+          stream: _activities
+              .orderBy('date', descending: true)
+              .where('user_id', isEqualTo: widget.currentUser!.id)
+              .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
             if (streamSnapshot.hasData &&
                 streamSnapshot.data!.docs.isNotEmpty) {
@@ -106,6 +104,7 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                                 UserActivityScreen.fromSnapshot(
                               mode: ActivityMode.details,
                               snapshot: documentSnapshot,
+                              userId: widget.currentUser!.id,
                             ),
                           ),
                         );
@@ -136,6 +135,7 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                 ),
               );
             } else {
+              print(streamSnapshot.toString());
               return SizedBox(
                 height: MediaQuery.of(context).size.height / 1.3,
                 child: const Center(
@@ -153,6 +153,7 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
             MaterialPageRoute(
               builder: (context) => UserActivityScreen(
                 mode: ActivityMode.add,
+                userId: widget.currentUser!.id,
               ),
             ),
           );

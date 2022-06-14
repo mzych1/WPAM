@@ -14,10 +14,12 @@ class UserActivityScreen extends StatefulWidget {
   Outfit? outfit;
   ActivityOverview? overview;
   ActivityMode mode;
+  String? userId;
 
-  UserActivityScreen({Key? key, required this.mode}) : super(key: key);
+  UserActivityScreen({Key? key, required this.mode, this.userId})
+      : super(key: key);
   UserActivityScreen.fromSnapshot(
-      {Key? key, required this.mode, required snapshot})
+      {Key? key, required this.mode, required snapshot, this.userId})
       : super(key: key) {
     forecast = WeatherForecast.fromSnapshot(snapshot);
     outfit = Outfit.fromSnapshot(snapshot);
@@ -57,6 +59,7 @@ class UserActivityScreenState extends State<UserActivityScreen> {
                   overviewCallback: (overview) => setState(() {
                     widget.overview = overview;
                   }),
+                  userId: widget.userId,
                 ),
               ],
             ),
@@ -90,6 +93,7 @@ class UserActivityScreenState extends State<UserActivityScreen> {
                     widget.overview = overview;
                   }),
                   overview: widget.overview,
+                  userId: widget.userId,
                 ),
               ],
             ),
