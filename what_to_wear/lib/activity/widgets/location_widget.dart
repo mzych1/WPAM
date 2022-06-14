@@ -30,6 +30,7 @@ class LocationWidgetState extends State<LocationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    _controller.text = widget.location;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

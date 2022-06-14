@@ -20,12 +20,46 @@ class ActivityWidget extends StatefulWidget {
       required this.mode,
       this.modeCallback,
       this.overviewCallback})
-      : super(key: key);
+      : super(key: key) {
+    print("Tworzenie nowego overview");
+    overview = ActivityOverview(
+      chosenDate: StartDateWidgetState.setStartDateTime(),
+      intensity: ActivityIntensity.medium,
+      location: '',
+      latitude: '',
+      longitude: '',
+    );
+  }
+
+  // ActivityWidget tworzony na potrzeby edycji
+  ActivityWidget.withStartData(
+      {Key? key,
+      required this.weatherCallback,
+      required this.outfitCallback,
+      required this.mode,
+      required this.modeCallback,
+      required this.overviewCallback,
+      overview})
+      : super(key: key) {
+    if (overview == null) {
+      this.overview = ActivityOverview(
+        chosenDate: StartDateWidgetState.setStartDateTime(),
+        intensity: ActivityIntensity.medium,
+        location: '',
+        latitude: '',
+        longitude: '',
+      );
+    } else {
+      this.overview = overview;
+    }
+  }
+
   final WeatherCallback weatherCallback;
   final OutfitCallback outfitCallback;
   ActivityMode mode;
   final ModeCallback? modeCallback;
   final OverviewCallback? overviewCallback;
+  late ActivityOverview overview;
 
   @override
   ActivityWidgetState createState() {
@@ -34,11 +68,6 @@ class ActivityWidget extends StatefulWidget {
 }
 
 class ActivityWidgetState extends State<ActivityWidget> {
-  DateTime _chosenDateTime = StartDateWidgetState.setStartDateTime();
-  ActivityIntensity? _intensity = ActivityIntensity.medium;
-  String _location = '';
-  String _latitude = '';
-  String _longitude = '';
   WeatherForecast? _forecast;
   Outfit? _outfit;
 
@@ -48,52 +77,65 @@ class ActivityWidgetState extends State<ActivityWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         StartDateWidget(
-          callback: (dateTime) => setState(() => _chosenDateTime = dateTime),
-          chosenDateTime: _chosenDateTime,
+          callback: (dateTime) =>
+              setState(() => widget.overview.chosenDate = dateTime),
+          chosenDateTime: widget.overview.chosenDate,
         ),
         const SizedBox(
           height: 20,
         ),
         IntensityWidget(
-          callback: (intensity) => setState(() => _intensity = intensity),
-          intensity: _intensity,
+          callback: (intensity) =>
+              setState(() => widget.overview.intensity = intensity),
+          intensity: widget.overview.intensity,
         ),
         const SizedBox(
           height: 20,
         ),
         LocationWidget(
             callback: (latitude, longitude, location) => setState(() {
-                  _latitude = latitude;
-                  _longitude = longitude;
-                  _location = location;
-                  print('Ustawiono location w ActivityWidget: ' + _location);
+                  widget.overview.latitude = latitude;
+                  widget.overview.longitude = longitude;
+                  widget.overview.location = location;
+                  print("ACTIVIY_WIDGET OVERVIEW callback: " +
+                      widget.overview.toString());
                 }),
-            latitude: _latitude,
-            longitude: _longitude,
-            location: _location),
+            latitude: widget.overview.latitude,
+            longitude: widget.overview.longitude,
+            location: widget.overview.location),
         ChooseOutfitButton(
           weatherCallback: (forecast) => setState(() {
             _forecast = forecast;
             widget.weatherCallback(_forecast);
+            print("ACTIVIY_WIDGET OVERVIEW weatherCallback: " +
+                widget.overview.toString());
           }),
           outfitCallback: (outfit) => setState(() {
             _outfit = outfit;
             widget.outfitCallback(_outfit);
+            print("ACTIVIY_WIDGET OVERVIEW outfitCallback: " +
+                widget.overview.toString());
           }),
           context: context,
-          chosenDateTime: _chosenDateTime,
-          intensity: _intensity,
-          latitude: _latitude,
-          longitude: _longitude,
-          location: _location,
+          overview: widget.overview,
           mode: widget.mode,
-          modeCallback: (ActivityMode mode) => setState(() {
+          modeCallback: (ActivityMode mode, ActivityOverview overview) =>
+              setState(() {
+            print("ACTIVIY_WIDGET OVERVIEW modeCallback-1: " +
+                widget.overview.toString());
             widget.mode = mode;
-            widget.modeCallback!(widget.mode);
-            widget.overviewCallback!(ActivityOverview(
-                chosenDate: _chosenDateTime,
-                location: _location,
-                intensity: _intensity));
+            widget.overview = overview;
+            widget.modeCallback!(widget.mode, widget.overview);
+            widget.overviewCallback!(widget.overview);
+            print("ACTIVIY_WIDGET OVERVIEW modeCallback-2: " +
+                widget.overview.toString());
+
+            // ActivityOverview(
+            //   chosenDate: widget.overview.chosenDate,
+            //   location: widget.overview.location,
+            //   intensity: widget.overview.intensity,
+            //   latitude: widget.overview.latitude,
+            //   longitude: widget.overview.longitude));
           }),
         ),
       ],

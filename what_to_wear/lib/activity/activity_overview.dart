@@ -5,16 +5,24 @@ import 'package:intl/intl.dart';
 class ActivityOverview {
   late DateTime chosenDate;
   late String location;
+  late String latitude;
+  late String longitude;
   ActivityIntensity? intensity;
+  String? activityId;
 
   ActivityOverview(
       {required this.chosenDate,
       required this.location,
-      required this.intensity});
+      required this.intensity,
+      required this.latitude,
+      required this.longitude,
+      this.activityId});
 
   ActivityOverview.fromSnapshot(DocumentSnapshot snapshot) {
     chosenDate = (snapshot['date'] as Timestamp).toDate();
     location = snapshot['location'];
+    latitude = snapshot['latitude'];
+    longitude = snapshot['longitude'];
     String intensityString = snapshot['intensity'];
     if (intensityString == "Niska") {
       intensity = ActivityIntensity.low;
@@ -23,6 +31,7 @@ class ActivityOverview {
     } else {
       intensity = ActivityIntensity.medium;
     }
+    activityId = snapshot.id;
   }
 
   @override

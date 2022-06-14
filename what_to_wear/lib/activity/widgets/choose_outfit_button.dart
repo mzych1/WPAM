@@ -9,7 +9,8 @@ import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 typedef WeatherForecastCallback = void Function(WeatherForecast forecast);
 typedef OutfitCallback = void Function(Outfit outfit);
-typedef ModeCallback = void Function(ActivityMode mode);
+typedef ModeCallback = void Function(
+    ActivityMode mode, ActivityOverview overview);
 final CollectionReference _activities =
     FirebaseFirestore.instance.collection('activities');
 
@@ -19,11 +20,7 @@ class ChooseOutfitButton extends StatelessWidget {
       required this.weatherCallback,
       required this.outfitCallback,
       required this.context,
-      required this.chosenDateTime,
-      required this.intensity,
-      required this.latitude,
-      required this.longitude,
-      required this.location,
+      required this.overview,
       required this.mode,
       required this.modeCallback})
       : super(key: key);
@@ -31,11 +28,7 @@ class ChooseOutfitButton extends StatelessWidget {
   final WeatherForecastCallback weatherCallback;
   final OutfitCallback outfitCallback;
   BuildContext context;
-  DateTime chosenDateTime;
-  ActivityIntensity? intensity;
-  String latitude;
-  String longitude;
-  String location;
+  ActivityOverview overview;
   ActivityMode mode;
   final ModeCallback modeCallback;
 
@@ -64,7 +57,9 @@ class ChooseOutfitButton extends StatelessWidget {
   }
 
   Future<void> chooseOutfit() async {
-    if (latitude.isEmpty || longitude.isEmpty) {
+    if (overview.latitude.isEmpty ||
+        overview.longitude.isEmpty ||
+        overview.location.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Nie wybrano lokalizacji'),
@@ -72,7 +67,7 @@ class ChooseOutfitButton extends StatelessWidget {
             duration: Duration(seconds: 2)),
       );
     } else {
-      final difference = chosenDateTime.difference(DateTime.now());
+      final difference = overview.chosenDate.difference(DateTime.now());
       if (difference.inMinutes < 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -84,29 +79,16 @@ class ChooseOutfitButton extends StatelessWidget {
       } else {
         int forecastsCount = (difference.inHours / 3).floor() + 2;
         WeatherForecast forecast = await WeatherApiProvider()
-            .getWeatherForecast(
-                latitude, longitude, forecastsCount, chosenDateTime);
+            .getWeatherForecast(overview.latitude, overview.longitude,
+                forecastsCount, overview.chosenDate);
         weatherCallback(forecast);
         Outfit outfit = Outfit(
             forecast.apparentTemperature,
-            intensity,
+            overview.intensity,
             forecast.cloudsPercentage,
             forecast.precipitationChance,
-            chosenDateTime.hour);
+            overview.chosenDate.hour);
         outfitCallback(outfit);
-
-        ActivityOverview overview = ActivityOverview(
-            chosenDate: chosenDateTime,
-            location: location,
-            intensity: intensity);
-
-        print("FORECAST: " + forecast.toString());
-        print("CHOSEN_DATE_TIME: " + chosenDateTime.toString());
-        print("INTENSITY: " + intensity.toString());
-        print("LAT: " + latitude);
-        print("LONG: " + longitude);
-        print("OUTFIT: " + outfit.toString());
-        print("MODE: " + mode.toString());
 
         if (mode == ActivityMode.loggedOut) {
           Navigator.push(
@@ -121,11 +103,11 @@ class ChooseOutfitButton extends StatelessWidget {
           );
         } else if (mode == ActivityMode.add) {
           await _activities.add({
-            "location": location,
-            "date": chosenDateTime,
-            "intensity": getIntensityName(intensity),
-            "longitude": longitude,
-            "latitude": latitude,
+            "location": overview.location,
+            "date": overview.chosenDate,
+            "intensity": getIntensityName(overview.intensity),
+            "longitude": overview.longitude,
+            "latitude": overview.latitude,
             "weather_description": forecast.description,
             "temperature": forecast.temperature,
             "apparent_temperature": forecast.apparentTemperature,
@@ -149,7 +131,8 @@ class ChooseOutfitButton extends StatelessWidget {
             "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
             "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
           });
-          modeCallback(ActivityMode.details);
+          print("overview: " + overview.toString());
+          modeCallback(ActivityMode.details, overview);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -157,9 +140,42 @@ class ChooseOutfitButton extends StatelessWidget {
                 duration: Duration(seconds: 1)),
           );
         } else if (mode == ActivityMode.edit) {
+          print('ACTIVITY ID: ' + overview.activityId.toString());
+          await _activities.doc(overview.activityId).update({
+            "location": overview.location,
+            "date": overview.chosenDate,
+            "intensity": getIntensityName(overview.intensity),
+            "longitude": overview.longitude,
+            "latitude": overview.latitude,
+            "weather_description": forecast.description,
+            "temperature": forecast.temperature,
+            "apparent_temperature": forecast.apparentTemperature,
+            "wind": forecast.windSpeed,
+            "clouds": forecast.cloudsPercentage,
+            "weather_image_url": forecast.imageUrl,
+            "precipitation_chance": forecast.precipitationChance,
+            "running_apparent_temperature": outfit.runningApparentTemperature,
+            "singlet": outfit.clothesMap[OutfitPartType.singlet]?.isUsed,
+            "tshirt": outfit.clothesMap[OutfitPartType.tshirt]?.isUsed,
+            "bluzka": outfit.clothesMap[OutfitPartType.bluzka]?.isUsed,
+            "ortalion": outfit.clothesMap[OutfitPartType.ortalion]?.isUsed,
+            "kurtka": outfit.clothesMap[OutfitPartType.kurtka]?.isUsed,
+            "szorty": outfit.clothesMap[OutfitPartType.szorty]?.isUsed,
+            "leginsy": outfit.clothesMap[OutfitPartType.leginsy]?.isUsed,
+            "ocieplaneLeginsy":
+                outfit.clothesMap[OutfitPartType.ocieplaneLeginsy]?.isUsed,
+            "opaska": outfit.clothesMap[OutfitPartType.opaska]?.isUsed,
+            "czapka": outfit.clothesMap[OutfitPartType.czapka]?.isUsed,
+            "komin": outfit.clothesMap[OutfitPartType.komin]?.isUsed,
+            "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
+            "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
+          });
+
+          modeCallback(ActivityMode.details, overview);
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('Zedytowano aktywność - TODO'),
+                content: Text('Zedytowano aktywność'),
                 duration: Duration(seconds: 1)),
           );
         }

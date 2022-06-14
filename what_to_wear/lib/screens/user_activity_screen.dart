@@ -4,7 +4,6 @@ import 'package:what_to_wear/activity/outfit.dart';
 import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/activity_overview_widget.dart';
 import 'package:what_to_wear/activity/widgets/activity_widget.dart';
-import 'package:what_to_wear/activity/widgets/intensity_widget.dart';
 import 'package:what_to_wear/activity/widgets/outfit_widget.dart';
 import 'package:what_to_wear/activity/widgets/weather_widget.dart';
 
@@ -49,8 +48,11 @@ class UserActivityScreenState extends State<UserActivityScreen> {
                   outfitCallback: (outfit) =>
                       setState(() => widget.outfit = outfit),
                   mode: ActivityMode.add,
-                  modeCallback: (ActivityMode mode) => setState(() {
+                  modeCallback:
+                      (ActivityMode mode, ActivityOverview overview) =>
+                          setState(() {
                     widget.mode = mode;
+                    widget.overview = overview;
                   }),
                   overviewCallback: (overview) => setState(() {
                     widget.overview = overview;
@@ -72,13 +74,29 @@ class UserActivityScreenState extends State<UserActivityScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("tryb edit"),
+                ActivityWidget.withStartData(
+                  weatherCallback: (forecast) =>
+                      setState(() => widget.forecast = forecast),
+                  outfitCallback: (outfit) =>
+                      setState(() => widget.outfit = outfit),
+                  mode: ActivityMode.edit,
+                  modeCallback:
+                      (ActivityMode mode, ActivityOverview overview) =>
+                          setState(() {
+                    widget.mode = mode;
+                    widget.overview = overview;
+                  }),
+                  overviewCallback: (overview) => setState(() {
+                    widget.overview = overview;
+                  }),
+                  overview: widget.overview,
+                ),
               ],
             ),
           ),
         ),
       );
-    } else {
+    } else if (widget.mode == ActivityMode.details) {
       return Scaffold(
         appBar: AppBar(
           title: const Text("Pogoda i strój"),
@@ -92,6 +110,44 @@ class UserActivityScreenState extends State<UserActivityScreen> {
                 ActivityOverviewWidget(overview: widget.overview),
                 WeatherWidget(forecast: widget.forecast),
                 OutfitWidget(outfit: widget.outfit),
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.mode = ActivityMode.edit;
+                      });
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              right: 10.0, top: 10.0, bottom: 10.0),
+                          child: Text('Edytuj', style: TextStyle(fontSize: 24)),
+                        ),
+                        Icon(Icons.edit),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(''),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Text("Wystąpił błąd - nieznany tryb"),
               ],
             ),
           ),
