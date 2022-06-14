@@ -5,9 +5,11 @@ import 'package:what_to_wear/activity/weather_service.dart';
 import 'package:what_to_wear/activity/widgets/activity_overview_widget.dart';
 import 'package:what_to_wear/activity/widgets/activity_widget.dart';
 import 'package:what_to_wear/activity/widgets/outfit_widget.dart';
+import 'package:what_to_wear/activity/widgets/review_widget.dart';
 import 'package:what_to_wear/activity/widgets/weather_widget.dart';
+import 'package:what_to_wear/screens/review_screen.dart';
 
-enum ActivityMode { add, edit, details, loggedOut }
+enum ActivityMode { add, edit, details, loggedOut, past, reviewed }
 
 class UserActivityScreen extends StatefulWidget {
   WeatherForecast? forecast;
@@ -135,6 +137,86 @@ class UserActivityScreenState extends State<UserActivityScreen> {
                     ),
                   ),
                 )
+              ],
+            ),
+          ),
+        ),
+      );
+    } else if (widget.mode == ActivityMode.past) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Pogoda i strój"),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ActivityOverviewWidget(overview: widget.overview),
+                WeatherWidget(forecast: widget.forecast),
+                OutfitWidget(outfit: widget.outfit),
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReviewScreen(
+                            ratingCallback: (forecastRating, outfitRating) {
+                              setState(() {
+                                widget.overview!.forecastRating =
+                                    forecastRating;
+                                widget.overview!.outfitRating = outfitRating;
+                                widget.mode = ActivityMode.reviewed;
+                              });
+                            },
+                            forecast: widget.forecast,
+                            outfit: widget.outfit,
+                            overview: widget.overview,
+                            userId: widget.userId,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              right: 10.0, top: 10.0, bottom: 10.0),
+                          child: Text('Wystaw ocenę',
+                              style: TextStyle(fontSize: 24)),
+                        ),
+                        Icon(Icons.star),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    } else if (widget.mode == ActivityMode.reviewed) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Pogoda i strój"),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ActivityOverviewWidget(overview: widget.overview),
+                WeatherWidget(forecast: widget.forecast),
+                OutfitWidget(outfit: widget.outfit),
+                ActivityReviewWidget(
+                  forecastRating: widget.overview!.forecastRating,
+                  outfitRating: widget.overview!.outfitRating,
+                ),
               ],
             ),
           ),

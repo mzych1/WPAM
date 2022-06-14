@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:what_to_wear/auth/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:what_to_wear/screens/review_screen.dart';
 import 'package:what_to_wear/screens/user_activity_screen.dart';
 
 typedef AccountCallback = void Function(GoogleSignInAccount? account);
@@ -147,16 +148,41 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
             .format((documentSnapshot['date'] as Timestamp).toDate())),
         subtitle: Text(documentSnapshot['location']),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserActivityScreen.fromSnapshot(
-                mode: ActivityMode.details,
-                snapshot: documentSnapshot,
-                userId: widget.currentUser!.id,
+          if ((documentSnapshot['date'] as Timestamp)
+              .toDate()
+              .isAfter(DateTime.now())) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserActivityScreen.fromSnapshot(
+                  mode: ActivityMode.details,
+                  snapshot: documentSnapshot,
+                  userId: widget.currentUser!.id,
+                ),
               ),
-            ),
-          );
+            );
+          } else if (documentSnapshot['reviewed']) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserActivityScreen.fromSnapshot(
+                  mode: ActivityMode.reviewed,
+                  snapshot: documentSnapshot,
+                ),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserActivityScreen.fromSnapshot(
+                  mode: ActivityMode.past,
+                  snapshot: documentSnapshot,
+                  userId: widget.currentUser!.id,
+                ),
+              ),
+            );
+          }
         },
         trailing: SizedBox(
           width: 50,

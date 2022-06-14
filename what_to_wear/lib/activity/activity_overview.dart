@@ -9,6 +9,8 @@ class ActivityOverview {
   late String longitude;
   ActivityIntensity? intensity;
   String? activityId;
+  double? forecastRating;
+  double? outfitRating;
 
   ActivityOverview(
       {required this.chosenDate,
@@ -32,6 +34,11 @@ class ActivityOverview {
       intensity = ActivityIntensity.medium;
     }
     activityId = snapshot.id;
+
+    if (snapshot['reviewed']) {
+      forecastRating = snapshot['forecast_rating'];
+      outfitRating = snapshot['outfit_rating'];
+    }
   }
 
   @override

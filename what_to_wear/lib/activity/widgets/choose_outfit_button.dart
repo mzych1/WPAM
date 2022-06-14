@@ -169,7 +169,8 @@ class ChooseOutfitButton extends StatelessWidget {
       "czapka": outfit.clothesMap[OutfitPartType.czapka]?.isUsed,
       "komin": outfit.clothesMap[OutfitPartType.komin]?.isUsed,
       "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
-      "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
+      "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed,
+      "reviewed": false
     };
   }
 
