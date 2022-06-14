@@ -88,41 +88,15 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
                 itemBuilder: (context, index) {
                   final DocumentSnapshot documentSnapshot =
                       streamSnapshot.data!.docs[index];
-                  return Card(
-                    margin: const EdgeInsets.all(5),
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    elevation: 5,
-                    child: ListTile(
-                      title: Text(dateFormat.format(
-                          (documentSnapshot['date'] as Timestamp).toDate())),
-                      subtitle: Text(documentSnapshot['location']),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                UserActivityScreen.fromSnapshot(
-                              mode: ActivityMode.details,
-                              snapshot: documentSnapshot,
-                              userId: widget.currentUser!.id,
-                            ),
-                          ),
-                        );
-                      },
-                      trailing: SizedBox(
-                        width: 50,
-                        child: Row(
-                          children: [
-                            // This icon button is used to delete a single product
-                            IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () =>
-                                    _deleteActivity(documentSnapshot.id)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
+                  if ((documentSnapshot['date'] as Timestamp)
+                      .toDate()
+                      .isAfter(DateTime.now())) {
+                    return getActivityCard(documentSnapshot,
+                        Theme.of(context).scaffoldBackgroundColor);
+                  } else {
+                    return getActivityCard(documentSnapshot,
+                        const Color.fromARGB(255, 180, 178, 202));
+                  }
                 },
               );
             } else if (streamSnapshot.hasData &&
@@ -159,6 +133,42 @@ class ActivitiesListScreenState extends State<ActivitiesListScreen> {
           );
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget getActivityCard(DocumentSnapshot documentSnapshot, Color cardColor) {
+    return Card(
+      margin: const EdgeInsets.all(5),
+      color: cardColor,
+      elevation: 5,
+      child: ListTile(
+        title: Text(dateFormat
+            .format((documentSnapshot['date'] as Timestamp).toDate())),
+        subtitle: Text(documentSnapshot['location']),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserActivityScreen.fromSnapshot(
+                mode: ActivityMode.details,
+                snapshot: documentSnapshot,
+                userId: widget.currentUser!.id,
+              ),
+            ),
+          );
+        },
+        trailing: SizedBox(
+          width: 50,
+          child: Row(
+            children: [
+              // This icon button is used to delete a single product
+              IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => _deleteActivity(documentSnapshot.id)),
+            ],
+          ),
+        ),
       ),
     );
   }
