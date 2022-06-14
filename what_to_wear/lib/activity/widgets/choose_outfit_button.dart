@@ -102,7 +102,7 @@ class ChooseOutfitButton extends StatelessWidget {
             ),
           );
         } else if (mode == ActivityMode.add) {
-          await _activities.add({
+          DocumentReference newActivity = await _activities.add({
             "location": overview.location,
             "date": overview.chosenDate,
             "intensity": getIntensityName(overview.intensity),
@@ -131,7 +131,9 @@ class ChooseOutfitButton extends StatelessWidget {
             "kaszkiet": outfit.clothesMap[OutfitPartType.kaszkiet]?.isUsed,
             "rekawiczki": outfit.clothesMap[OutfitPartType.rekawiczki]?.isUsed
           });
-          print("overview: " + overview.toString());
+          print("1 - overview: " + overview.toString());
+          overview.activityId = newActivity.id;
+          print("2 - overview: " + overview.toString());
           modeCallback(ActivityMode.details, overview);
 
           ScaffoldMessenger.of(context).showSnackBar(

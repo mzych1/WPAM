@@ -36,7 +36,7 @@ class ActivityOverview {
 
   @override
   String toString() {
-    return 'ActivityOverview(chosenDate: $chosenDate, location: $location, intensity: $intensity)';
+    return 'ActivityOverview(chosenDate: $chosenDate, location: $location, latitude: $latitude, longitude: $longitude, intensity: $intensity, activityId: $activityId)';
   }
 
   String getDateTime() {
